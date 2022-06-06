@@ -48,15 +48,22 @@
     const labels = selectedNames.map(parseTimeFromFilename).map(formatTime);
     const usedColors = allColors.slice(-selectedNames.length);
   
-    const layers = selectedNames.map((name, i) => L.geoJSON(JSON.parse(data.images[name]), {
-      "color": usedColors[i],
-      "weight": 0,
-      "fillOpacity": 0.5
-    }));
+    const layers = selectedNames.map((name, i) => {
+      if (typeof data.images[name] === "string") {
+        const parsed = JSON.parse(data.images[name]);
+        return L.geoJSON(parsed, {
+          "color": usedColors[i],
+          "weight": 0,
+          "fillOpacity": 0.5
+        });
+      }
+    });
 
     group.clearLayers();
     layers.forEach((layer) => {
-      layer.addTo(group);
+      if (layer) {
+        layer.addTo(group);
+      }
     });
   
     const lastName = names.slice(-1)[0];
