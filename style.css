@@ -1,0 +1,29 @@
+html, body {
+  height: 100%;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+  background-color: #dddddd;
+}
+
+.legend i {
+  width: 18px;
+  height: 18px;
+  float: left;
+  margin-right: 8px;
+  opacity: 0.7;
+}
+
+.flex-fill {
+  flex: 1 1 auto;
+}
+
+.modal-content {
+  border: 0 !important;
+}
+
+.modal-header {
+  border-bottom: 0px !important;
+}
