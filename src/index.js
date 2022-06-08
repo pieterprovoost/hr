@@ -59,7 +59,20 @@
         return L.geoJSON(parsed, {
           "color": usedColors[i],
           "weight": 0,
-          "fillOpacity": 0.5
+          "fillOpacity": 0.5,
+          "onEachFeature": function(feature, layer) {
+            if (feature.properties && feature.properties.p_min) {
+              const p_min = Math.round(feature.properties.p_min / 255 * 100);
+              const p_max = Math.round(feature.properties.p_max / 255 * 100);
+              let content;
+              if (p_min === p_max) {
+                content = "<p>" + p_min + "% kans</p>";
+              } else {
+                content = "<p>" + p_min + " - " + p_max + "% kans</p>";
+              }
+              layer.bindPopup(content);
+            }
+          }
         });
       }
     });
