@@ -17,8 +17,11 @@
 <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
 <script src="https://unpkg.com/dayjs@1.8.21/locale/nl-be.js"></script>
 <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin=""></script>
+<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.76.1/dist/L.Control.Locate.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.76.1/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+<script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
 <title>Hagelradar</title>
 </head>
 <body>
@@ -31,7 +34,7 @@
           <span class="navbar-text mx-auto text-black" id="status"></span>
           <ul class="navbar-nav mw-auto">
             <li class="nav-item">
-              <a class="nav-link text-black" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">Info</a>
+              <a class="nav-link text-black" href="#" data-bs-toggle="modal" data-bs-target="#infoModal">Info</a>
             </li>
           </ul>
         </div>
@@ -40,11 +43,11 @@
     
     <div id="map" class="flex-fill"></div>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">hagelradar.be</h5>
+            <h5 class="modal-title" id="infoModalLabel">hagelradar.be</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -54,7 +57,24 @@
         </div>
       </div>
     </div>
-    
+
+    <div class="modal fade" id="alertsModal" tabindex="-1" aria-labelledby="alertsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="alertsModalLabel">EUMETNET – Meteoalarm</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Onderstaande waarschuwingen zijn afkomstig van <a href="https://meteoalarm.org/" target="_blank">meteoalarm.org</a>.</p>
+            <p><i>Time delays between this website and the www.meteoalarm.org website are possible, for the most up to date information about alert levels as published by the participating National Meteorological Services please use www.meteoalarm.org.</i></p>
+            <div id="alertsBody">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
 <script src="script.js"></script>

@@ -27,3 +27,7 @@ html, body {
 .modal-header {
   border-bottom: 0px !important;
 }
+
+.easy-button-container {
+  visibility: hidden;
+}
