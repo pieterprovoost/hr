@@ -10,8 +10,8 @@
 
   dayjs.locale("nl-be");
 
-  function parseTimeFromFilename(filename) {
-    const datePart = filename.match(/([0-9]+).h5/)[1];
+  function parseDatetime(input) {
+    const datePart = input.match(/([0-9]+)/)[1];
     const iso = datePart.substring(0, 4) + "-" + datePart.substring(4, 6) + "-" + datePart.substring(6, 8) + "T" + datePart.substring(8, 10) + ":" + datePart.substring(10, 12) + "Z";
     const date = new Date(Date.parse(iso));
     return date;
@@ -56,50 +56,47 @@
   }).addTo(map);
 
   async function updateMap() {
-    const maxImages = 9;
     const allColors = ["#fff7f3", "#fde0dd", "#fcc5c0", "#fa9fb5", "#f768a1", "#dd3497", "#ae017e", "#7a0177", "#49006a"];
 
-    const res = await fetch("https://pieterprovoost-hagel.s3.eu-central-1.amazonaws.com/hagel.json");
+    const res = await fetch("https://hagelradar.s3.eu-central-1.amazonaws.com/output.json");
     const data = await res.json();
-    const names = Object.keys(data.images).sort();
-    const selectedNames = names.slice(-maxImages);
-    const labels = selectedNames.map(parseTimeFromFilename).map(formatTime);
-    const usedColors = allColors.slice(-selectedNames.length);
-  
-    const layers = selectedNames.map((name, i) => {
-      if (typeof data.images[name] === "string") {
-        const parsed = JSON.parse(data.images[name]);
-        return L.geoJSON(parsed, {
-          "color": usedColors[i],
-          "weight": 0,
-          "fillOpacity": 0.5,
-          "onEachFeature": function(feature, layer) {
-            if (feature.properties && feature.properties.p_min) {
-              const p_min = Math.round(feature.properties.p_min / 255 * 100);
-              const p_max = Math.round(feature.properties.p_max / 255 * 100);
-              let content;
-              if (p_min === p_max) {
-                content = "<p>" + p_min + "% kans</p>";
-              } else {
-                content = "<p>" + p_min + " - " + p_max + "% kans</p>";
-              }
-              layer.bindPopup(content);
-            }
-          }
-        });
-      }
-    });
-
+   
+    const usedColors = allColors.slice(-data.length);
+    let labels = [];
+    let lastTime = null;
     group.clearLayers();
-    layers.forEach((layer) => {
-      if (layer) {
-        layer.addTo(group);
-      }
+
+    data.map((snapshot, i) => {
+
+      const parsed = parseDatetime(snapshot.timestamp);
+      lastTime = formatDate(parsed);
+      labels.push(formatTime(parsed));
+
+      const layer = L.geoJSON(snapshot.geo, {
+        "color": usedColors[i],
+        "weight": 0,
+        "fillOpacity": 0.5,
+        "onEachFeature": function(feature, layer) {
+          if (feature.properties && feature.properties.p_min) {
+            const p_min = Math.round(feature.properties.p_min / 255 * 100);
+            const p_max = Math.round(feature.properties.p_max / 255 * 100);
+            let content;
+            if (p_min === p_max) {
+              content = "<p>" + p_min + "% kans</p>";
+            } else {
+              content = "<p>" + p_min + " - " + p_max + "% kans</p>";
+            }
+            layer.bindPopup(content);
+          }
+        }
+      });
+
+      layer.addTo(group);
+
     });
   
-    const lastName = names.slice(-1)[0];
-    const updated = formatDate(parseTimeFromFilename(lastName));
-    document.getElementById("status").innerHTML = updated;
+    const lastName = labels.slice(-1);
+    document.getElementById("status").innerHTML = lastTime;
 
     const div = document.getElementsByClassName("legend")[0];
     div.innerHTML = "";
@@ -108,20 +105,20 @@
       div.innerHTML += '<i style="background-color: ' + usedColors[i] + '"></i>' + labels[i] + '<br/>';
     }
 
-    if (data.alerts && data.alerts.length) {
-      let content = data.alerts.map(alert => {
-        return "<h5>" + alert.headline + "</h5><p>" + alert.description + "</p>";
-      }).join("");
-      document.getElementById("alertsBody").innerHTML = content;
-      document.querySelectorAll(".easy-button-container").forEach(function(el) {
-        el.style.visibility = "visible";
-      });
-    } else {
-      document.querySelectorAll(".easy-button-container").forEach(function(el) {
-        el.style.visibility = "hidden";
-      });
-      document.getElementById("alertsBody").innerHTML = "";
-    }
+    // if (data.alerts && data.alerts.length) {
+    //   let content = data.alerts.map(alert => {
+    //     return "<h5>" + alert.headline + "</h5><p>" + alert.description + "</p>";
+    //   }).join("");
+    //   document.getElementById("alertsBody").innerHTML = content;
+    //   document.querySelectorAll(".easy-button-container").forEach(function(el) {
+    //     el.style.visibility = "visible";
+    //   });
+    // } else {
+    //   document.querySelectorAll(".easy-button-container").forEach(function(el) {
+    //     el.style.visibility = "hidden";
+    //   });
+    //   document.getElementById("alertsBody").innerHTML = "";
+    // }
 
   }
 
