@@ -105,6 +105,24 @@
       div.innerHTML += '<i style="background-color: ' + usedColors[i] + '"></i>' + labels[i] + '<br/>';
     }
 
+    const layer = L.geoJSON(data.alerts, {
+      pointToLayer: function createCircleMarker(feature, latlng) {
+        let options = {
+          radius: 8,
+          color: "#fcad03", // "#fcba03",
+          weight: 2,
+          opacity: 0.5,
+          fillOpacity: 0
+        }
+        return L.circleMarker(latlng, options);
+      },
+      onEachFeature: function(feature, layer) {
+        layer.bindPopup(feature.properties.timestamp + "<br/>" + feature.properties.obs_intensity_description);
+      }
+    });
+
+    layer.addTo(group);
+
     // if (data.alerts && data.alerts.length) {
     //   let content = data.alerts.map(alert => {
     //     return "<h5>" + alert.headline + "</h5><p>" + alert.description + "</p>";
