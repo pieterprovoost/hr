@@ -61,7 +61,7 @@
     const res = await fetch("https://hagelradar.s3.eu-central-1.amazonaws.com/output.json");
     const data = await res.json();
    
-    const usedColors = allColors.slice(-data.length);
+    const usedColors = allColors.slice(-data.maps.length);
     let labels = [];
     let lastTime = null;
     group.clearLayers();
