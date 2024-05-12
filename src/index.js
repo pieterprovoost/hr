@@ -66,7 +66,7 @@
     let lastTime = null;
     group.clearLayers();
 
-    data.map((snapshot, i) => {
+    data.maps.map((snapshot, i) => {
 
       const parsed = parseDatetime(snapshot.timestamp);
       lastTime = formatDate(parsed);
